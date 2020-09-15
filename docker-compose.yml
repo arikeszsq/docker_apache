@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  laravel:
+    build:
+      context: ./dockerfile
+      dockerfile: Dockerfile7laravel
+    tty: true
+    ports:
+      - "666:80"
+    volumes:
+      - ../laravel:/var/www/html
+      - ./php/php.ini:/usr/local/etc/php/conf.d/php.ini
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/data/redis:/data
+    command: redis-server
+    
+  phpredisadmin:
+    container_name: phpredisadmin
+    image: erikdubbelboer/phpredisadmin
+    expose:
+      - '80'
+    ports:
+      - "6380:80"
+    environment:
+      - REDIS_1_HOST=redis
+      - REDIS_1_NAME=redis
+    depends_on:
+      - redis
+    links:
+      - redis:redis
+
